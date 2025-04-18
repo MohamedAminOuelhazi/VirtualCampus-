@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.chart.BarChart?>
+<?import javafx.scene.chart.CategoryAxis?>
+<?import javafx.scene.chart.NumberAxis?>
+<?import javafx.scene.chart.PieChart?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ProgressBar?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.control.SplitPane?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+
+<SplitPane dividerPositions="0.2" prefHeight="600" prefWidth="1000" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/23.0.1" fx:controller="com.virtual.compus.AdminController">
+
+    <!-- Drawer Navigation -->
+    <VBox spacing="10" style="-fx-background-color: #2c3e50; -fx-padding: 20;">
+        <Label style="-fx-text-fill: white; -fx-font-size: 18; -fx-padding: 0 0 20 0;" text="VIRTUAL CAMPUS" />
+        
+        <Button onAction="#showDashboard" style="-fx-background-color: transparent; -fx-text-fill: white; -fx-font-size: 14;" text="📊 Dashboard" />
+        
+        <Button onAction="#showStudents" style="-fx-background-color: transparent; -fx-text-fill: white; -fx-font-size: 14;" text="👨 Étudiants" />
+        
+        <Button onAction="#showProfessors" style="-fx-background-color: transparent; -fx-text-fill: white; -fx-font-size: 14;" text="👨 Professeurs" />
+        
+        <Button onAction="#showBuildings" style="-fx-background-color: transparent; -fx-text-fill: white; -fx-font-size: 14;" text="🏢 Bâtiments" />
+        
+        <Button onAction="#showBackup" style="-fx-background-color: transparent; -fx-text-fill: white; -fx-font-size: 14;" text="💾 Sauvegarde" />
+        
+        <Separator style="-fx-background-color: #34495e;" />
+        
+        <Button onAction="#exportPDF" styleClass="export-btn" text="📤 Exporter PDF" />
+        <Button onAction="#exportExcel" styleClass="export-btn" text="📥 Exporter Excel" />
+
+	<Button onAction="#handleLogout" styleClass="-fx-background-color: #e74c3c; -fx-text-fill: white; -fx-font-size: 14; -fx-background-radius: 5;" text="🚪 Déconnexion" />
+        	
+    </VBox>
+
+    <StackPane fx:id="contentArea">
+    <!-- Dashboard (Vue par défaut) -->
+    <GridPane fx:id="dashboardPane" hgap="20" style="-fx-padding: 20;" vgap="20" visible="true">
+        <children>
+            <!-- PieChart Satisfaction -->
+            <PieChart fx:id="satisfactionChart" prefHeight="300" prefWidth="400" GridPane.columnIndex="0" GridPane.rowIndex="0">
+                <title>Satisfaction des Étudiants</title>
+            </PieChart>
+            
+            <!-- BarChart Occupation -->
+            <BarChart fx:id="occupationChart" prefHeight="300" prefWidth="400" title="Occupation des Bâtiments" GridPane.columnIndex="1" GridPane.rowIndex="0">
+                <xAxis>
+                    <CategoryAxis label="Bâtiments" />
+                </xAxis>
+                <yAxis>
+                    <NumberAxis label="Taux d'occupation (%)" upperBound="100" />
+                </yAxis>
+            </BarChart>
+
+            <!-- Statistiques temps réel -->
+            <VBox spacing="10" GridPane.columnIndex="0" GridPane.columnSpan="2" GridPane.rowIndex="1">
+                <Label style="-fx-font-size: 16; -fx-font-weight: bold;" text="Statistiques en Direct:" />
+                
+                <HBox alignment="CENTER_LEFT" spacing="20">
+                    <ProgressBar fx:id="wifiUsage" prefWidth="200" progress="0.7" style="-fx-accent: #3498db; -fx-height: 20;" />
+                    <Label text="WiFi: 70%" />
+                </HBox>
+                
+                <HBox alignment="CENTER_LEFT" spacing="20">
+                    <ProgressBar fx:id="electriciteUsage" prefWidth="200" progress="0.4" style="-fx-accent: #e67e22;" />
+                    <Label text="Électricité: 40%" />
+                </HBox>
+            </VBox>
+        </children>
+         <columnConstraints>
+            <ColumnConstraints />
+            <ColumnConstraints />
+         </columnConstraints>
+         <rowConstraints>
+            <RowConstraints />
+            <RowConstraints />
+         </rowConstraints>
+    </GridPane>
+
+    <!-- Section Étudiants -->
+
+    <GridPane fx:id="studentsPane" hgap="20" style="-fx-padding: 20;" vgap="20" visible="false">
+            <children>
+                    <HBox alignment="CENTER_LEFT" spacing="10">
+                        <Button onAction="#addStudent" style="-fx-background-color: #27ae60; -fx-text-fill: white;" text="Ajouter Étudiant" />
+                        <Button onAction="#deleteStudent" style="-fx-background-color: #c0392b; -fx-text-fill: white;" text="Supprimer" />
+                        <TextField fx:id="searchStudentField" promptText="Rechercher étudiant..." style="-fx-background-radius: 5;" />
+                    </HBox>
+
+                    <TableView fx:id="studentsTable" prefHeight="400">
+                        <columns>
+                            <TableColumn prefWidth="150" text="Nom" />
+                            <TableColumn prefWidth="120" text="Filière" />
+                            <TableColumn prefWidth="100" text="Satisfaction" />
+                            <TableColumn prefWidth="100" text="Heures Cours" />
+                        </columns>
+                    </TableView>
+
+            </children>
+            <columnConstraints>
+                <ColumnConstraints />
+                <ColumnConstraints />
+            </columnConstraints>
+            <rowConstraints>
+                <RowConstraints />
+                <RowConstraints />
+            </rowConstraints>
+        </GridPane>
+
+    <!-- Section Professeurs -->
+    <VBox fx:id="professorsPane" spacing="15" style="-fx-padding: 20;" visible="false">
+        <HBox spacing="10">
+            <Button onAction="#addProfessor" style="-fx-background-color: #2980b9; -fx-text-fill: white;" text="Nouveau Professeur" />
+            <Button onAction="#toggleAvailability" style="-fx-background-color: #f1c40f;" text="Modifier Disponibilité" />
+        </HBox>
+        
+        <TableView fx:id="professorsTable" prefHeight="400">
+            <columns>
+                <TableColumn prefWidth="150" text="Nom" />
+                <TableColumn prefWidth="150" text="Matière" />
+                <TableColumn prefWidth="100" text="Disponible" />
+            </columns>
+        </TableView>
+    </VBox>
+
+    <!-- Section Bâtiments -->
+    <VBox fx:id="buildingsPane" spacing="15" style="-fx-padding: 20;" visible="false">
+        <HBox spacing="10">
+            <Button onAction="#addBuilding" style="-fx-background-color: #8e44ad; -fx-text-fill: white;" text="Ajouter Bâtiment" />
+            <ComboBox fx:id="buildingTypeCombo" promptText="Type de bâtiment" />
+        </HBox>
+        
+        <TableView fx:id="buildingsTable" prefHeight="400">
+            <columns>
+                <TableColumn prefWidth="150" text="Nom" />
+                <TableColumn prefWidth="100" text="Type" />
+                <TableColumn prefWidth="80" text="Capacité" />
+                <TableColumn prefWidth="120" text="Consommation" />
+            </columns>
+        </TableView>
+    </VBox>
+
+    <!-- Section Sauvegarde -->
+    <VBox fx:id="backupPane" alignment="CENTER" spacing="20" style="-fx-padding: 40;" visible="false">
+        <Button onAction="#performBackup" style="-fx-background-color: #2ecc71; -fx-text-fill: white; -fx-font-size: 14;" text="📥 Sauvegarder Base de Données" />
+        
+        <Button onAction="#restoreBackup" style="-fx-background-color: #e74c3c; -fx-text-fill: white; -fx-font-size: 14;" text="📤 Restaurer Sauvegarde" />
+        
+        <Label fx:id="backupStatus" style="-fx-text-fill: #7f8c8d;" text="Dernière sauvegarde: 12/06/2024 14:30" />
+    </VBox>
+</StackPane>
+
+</SplitPane>
