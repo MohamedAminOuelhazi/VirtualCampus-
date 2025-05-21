@@ -9,20 +9,17 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane prefHeight="460.0" prefWidth="520.0" style="-fx-background-color: #b0bbcf;" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.virtual.compus.AddProfesseurController">
-
+<AnchorPane prefHeight="460.0" prefWidth="520.0" style="-fx-background-color: #b0bbcf;" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.virtual.compus.ModifierProfesseurController">
     <children>
         <AnchorPane prefHeight="82.0" prefWidth="520.0" style="-fx-background-color: #293242;">
             <children>
-                <Label layoutX="75.0" layoutY="33.0" text="AJOUTER UN PROFESSEUR" textFill="WHITE">
+                <Label layoutX="75.0" layoutY="33.0" text="MODIFIER UN PROFESSEUR" textFill="WHITE">
                     <font>
                         <Font size="18.0" />
                     </font>
                 </Label>
                 <ImageView fitHeight="42.0" fitWidth="69.0" layoutX="26.0" layoutY="26.0" pickOnBounds="true" preserveRatio="true">
-                    <image>
 
-                    </image>
                 </ImageView>
             </children>
         </AnchorPane>
@@ -35,7 +32,7 @@
 
         <CheckBox fx:id="dispoCheckBox" layoutX="92.0" layoutY="225.0" text="Disponible" />
 
-        <Button fx:id="saveButton" layoutX="92.0" layoutY="294.0" mnemonicParsing="false" onAction="#saveProfesseur" prefHeight="25.0" prefWidth="348.0" style="-fx-background-color: #293242;" text="ENREGISTRER" textFill="WHITE" />
+        <Button fx:id="saveButton" layoutX="92.0" layoutY="294.0" mnemonicParsing="false" onAction="#saveModifications" prefHeight="25.0" prefWidth="348.0" style="-fx-background-color: #293242;" text="ENREGISTRER" textFill="WHITE" />
 
         <Button fx:id="backButton" layoutX="92.0" layoutY="332.0" mnemonicParsing="false" onAction="#goBack" prefHeight="25.0" prefWidth="348.0" style="-fx-background-color: #293242;" text="RETOUR" textFill="WHITE" />
     </children>

@@ -8,7 +8,7 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane prefHeight="460.0" prefWidth="520.0" style="-fx-background-color: #b0bbcf;" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.virtual.compus.controllers.AddEtudiantController">
+<AnchorPane prefHeight="460.0" prefWidth="520.0" style="-fx-background-color: #b0bbcf;" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.virtual.compus.AddEtudiantController">
 
     <children>
         <AnchorPane prefHeight="82.0" prefWidth="520.0" style="-fx-background-color: #293242;">
@@ -20,7 +20,7 @@
                 </Label>
                 <ImageView fitHeight="42.0" fitWidth="69.0" layoutX="26.0" layoutY="26.0" pickOnBounds="true" preserveRatio="true">
                     <image>
-                        <Image url="@../../Images/student_icon.png" />
+
                     </image>
                 </ImageView>
             </children>

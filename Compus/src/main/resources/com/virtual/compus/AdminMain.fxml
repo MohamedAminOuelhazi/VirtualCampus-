@@ -20,10 +20,13 @@
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
 
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.control.cell.PropertyValueFactory?>
 <SplitPane dividerPositions="0.2" prefHeight="600" prefWidth="1000" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/23.0.1" fx:controller="com.virtual.compus.AdminController">
 
     <!-- Drawer Navigation -->
-    <VBox spacing="10" style="-fx-background-color: #2c3e50; -fx-padding: 20;">
+    <VBox spacing="10" style="-fx-background-color: #2c3e50; -fx-padding: 10;">
         <Label style="-fx-text-fill: white; -fx-font-size: 18; -fx-padding: 0 0 20 0;" text="VIRTUAL CAMPUS" />
         
         <Button onAction="#showDashboard" style="-fx-background-color: transparent; -fx-text-fill: white; -fx-font-size: 14;" text="📊 Dashboard" />
@@ -38,8 +41,6 @@
         
         <Separator style="-fx-background-color: #34495e;" />
         
-        <Button onAction="#exportPDF" styleClass="export-btn" text="📤 Exporter PDF" />
-        <Button onAction="#exportExcel" styleClass="export-btn" text="📥 Exporter Excel" />
 
 	<Button onAction="#handleLogout" styleClass="-fx-background-color: #e74c3c; -fx-text-fill: white; -fx-font-size: 14; -fx-background-radius: 5;" text="🚪 Déconnexion" />
         	
@@ -49,13 +50,19 @@
     <!-- Dashboard (Vue par défaut) -->
     <GridPane fx:id="dashboardPane" hgap="20" style="-fx-padding: 20;" vgap="20" visible="true">
         <children>
-            <!-- PieChart Satisfaction -->
-            <PieChart fx:id="satisfactionChart" prefHeight="300" prefWidth="400" GridPane.columnIndex="0" GridPane.rowIndex="0">
-                <title>Satisfaction des Étudiants</title>
+            <!-- PieChart pour les étudiants -->
+            <PieChart fx:id="satisfactionChart" prefHeight="300.0" prefWidth="400.0" title="Satisfaction des Étudiants">
+                <GridPane.columnIndex>0</GridPane.columnIndex>
+                <GridPane.rowIndex>0</GridPane.rowIndex>
             </PieChart>
-            
+            <!-- PieChart pour les professeurs -->
+            <PieChart fx:id="profSatisfactionChart" prefHeight="300.0" prefWidth="400.0" title="Satisfaction des Professeurs">
+                <GridPane.columnIndex>1</GridPane.columnIndex>
+                <GridPane.rowIndex>0</GridPane.rowIndex>
+            </PieChart>
+
             <!-- BarChart Occupation -->
-            <BarChart fx:id="occupationChart" prefHeight="300" prefWidth="400" title="Occupation des Bâtiments" GridPane.columnIndex="1" GridPane.rowIndex="0">
+            <BarChart fx:id="occupationChart"  prefHeight="700" prefWidth="400" title="Occupation des Bâtiments" GridPane.columnIndex="0" GridPane.rowIndex="1">
                 <xAxis>
                     <CategoryAxis label="Bâtiments" />
                 </xAxis>
@@ -64,20 +71,38 @@
                 </yAxis>
             </BarChart>
 
+
             <!-- Statistiques temps réel -->
-            <VBox spacing="10" GridPane.columnIndex="0" GridPane.columnSpan="2" GridPane.rowIndex="1">
+            <VBox spacing="10" GridPane.columnIndex="0" GridPane.columnSpan="2" GridPane.rowIndex="2">
                 <Label style="-fx-font-size: 16; -fx-font-weight: bold;" text="Statistiques en Direct:" />
-                
+
                 <HBox alignment="CENTER_LEFT" spacing="20">
                     <ProgressBar fx:id="wifiUsage" prefWidth="200" progress="0.7" style="-fx-accent: #3498db; -fx-height: 20;" />
-                    <Label text="WiFi: 70%" />
+                    <Label fx:id="wifiUsageLabel" text="WiFi: 70%" />
                 </HBox>
-                
+
                 <HBox alignment="CENTER_LEFT" spacing="20">
                     <ProgressBar fx:id="electriciteUsage" prefWidth="200" progress="0.4" style="-fx-accent: #e67e22;" />
-                    <Label text="Électricité: 40%" />
+                    <Label fx:id="electriciteUsageLabel" text="Électricité: 40%" />
+                </HBox>
+
+                <HBox alignment="CENTER_LEFT" spacing="20">
+                    <ProgressBar fx:id="eauUsage" prefWidth="200" progress="0.0" style="-fx-accent: #1abc9c; -fx-height: 20;" />
+                    <Label fx:id="eauUsageLabel" text="Eau: 0%" />
+                </HBox>
+
+                <HBox alignment="CENTER_LEFT" spacing="20">
+                    <ProgressBar fx:id="espaceUsage" prefWidth="200" progress="0.0" style="-fx-accent: #9b59b6; -fx-height: 20;" />
+                    <Label fx:id="espaceUsageLabel" text="Espace: 0%" />
                 </HBox>
             </VBox>
+            <!-- Add this after the Statistiques en Direct VBox -->
+            <VBox spacing="10" GridPane.columnIndex="0" GridPane.columnSpan="2" GridPane.rowIndex="3">
+                <Label style="-fx-font-size: 14; -fx-font-weight: bold;" text="Dernier Événement:" />
+                <Label fx:id="lastEventLabel" text="Aucun événement" />
+            </VBox>
+
+            <Button fx:id="simulateCycleButton" layoutX="92.0" layoutY="650.0" mnemonicParsing="false" onAction="#simulateCycle" prefHeight="25.0" prefWidth="348.0" style="-fx-background-color: #293242;" text="SIMULER CYCLE" textFill="WHITE" GridPane.rowIndex="7" GridPane.columnIndex="0" GridPane.columnSpan="2" />
         </children>
          <columnConstraints>
             <ColumnConstraints />
@@ -93,20 +118,175 @@
 
     <GridPane fx:id="studentsPane" hgap="20" style="-fx-padding: 20;" vgap="20" visible="false">
             <children>
-                    <HBox alignment="CENTER_LEFT" spacing="10">
-                        <Button onAction="#addStudent" style="-fx-background-color: #27ae60; -fx-text-fill: white;" text="Ajouter Étudiant" />
-                        <Button onAction="#deleteStudent" style="-fx-background-color: #c0392b; -fx-text-fill: white;" text="Supprimer" />
-                        <TextField fx:id="searchStudentField" promptText="Rechercher étudiant..." style="-fx-background-radius: 5;" />
-                    </HBox>
+                <HBox  spacing="10" GridPane.rowIndex="0">
+                    <!-- Bouton Ajouter (style identique aux autres) -->
+                    <Button onAction="#openAddStudentWindow"
+                            style="-fx-background-color: #27ae60; -fx-text-fill: white; -fx-background-radius: 5;"
+                            text="+ Ajouter Étudiant">
 
-                    <TableView fx:id="studentsTable" prefHeight="400">
-                        <columns>
-                            <TableColumn prefWidth="150" text="Nom" />
-                            <TableColumn prefWidth="120" text="Filière" />
-                            <TableColumn prefWidth="100" text="Satisfaction" />
-                            <TableColumn prefWidth="100" text="Heures Cours" />
-                        </columns>
-                    </TableView>
+                    </Button>
+
+                    <Button fx:id="deleteStudentButton" onAction="#deleteStudent"
+                    style="-fx-background-color: #c0392b; -fx-text-fill: white; -fx-background-radius: 5;"
+                    text="Supprimer"/>
+                    <Button onAction="#modifierS" style="-fx-background-color: #f1c40f;" text="Modifier" />
+                    <Button fx:id="exportPDFS" onAction="#exportPDFS" styleClass="export-btn" text="📤 Exporter PDF" />
+                    <Button fx:id="exportExcelS" onAction="#exportExcelS" styleClass="export-btn" text="📥 Exporter Excel" />
+
+
+                    <TextField fx:id="searchStudentField"
+                               promptText="Rechercher étudiant..."
+                               style="-fx-background-radius: 5;"/>
+                </HBox>
+                <TableView fx:id="studentsTable" prefHeight="400" GridPane.rowIndex="1">
+                    <columns>
+                        <TableColumn fx:id="nomColumn" prefWidth="150" text="Nom">
+                            <cellValueFactory>
+                                <PropertyValueFactory property="nom" />
+                            </cellValueFactory>
+                        </TableColumn>
+                        <TableColumn fx:id="filiereColumn" prefWidth="120" text="Filière">
+                            <cellValueFactory>
+                                <PropertyValueFactory property="filiere" />
+                            </cellValueFactory>
+                        </TableColumn>
+                        <TableColumn fx:id="satisfactionColumn" prefWidth="100" text="Satisfaction">
+                            <cellValueFactory>
+                                <PropertyValueFactory property="satisfaction" />
+                            </cellValueFactory>
+                        </TableColumn>
+                        <TableColumn fx:id="heuresCoursColumn" prefWidth="100" text="Heures Cours">
+                            <cellValueFactory>
+                                <PropertyValueFactory property="heuresCours" />
+                            </cellValueFactory>
+                        </TableColumn>
+                    </columns>
+                </TableView>
+            </children>
+
+            <columnConstraints>
+                <ColumnConstraints />
+                <ColumnConstraints />
+            </columnConstraints>
+            <rowConstraints>
+                <RowConstraints />
+                <RowConstraints />
+            </rowConstraints>
+        </GridPane>
+
+
+    <!-- Section Professeurs -->
+    <GridPane fx:id="professorsPane" hgap="20" style="-fx-padding: 20;" vgap="20" visible="false">
+            <children>
+                <HBox spacing="10"  GridPane.rowIndex="0">
+                    <Button onAction="#addProfessor" style="-fx-background-color: #2980b9; -fx-text-fill: white;" text="Nouveau Professeur" />
+                    <Button fx:id="deleteProfButton" onAction="#deleteProf"
+                            style="-fx-background-color: #c0392b; -fx-text-fill: white; -fx-background-radius: 5;"
+                            text="Supprimer"/>
+                    <Button onAction="#modifierP" style="-fx-background-color: #f1c40f;" text="Modifier" />
+
+                    <Button fx:id="exportPDFP" onAction="#exportPDFP" styleClass="export-btn" text="📤 Exporter PDF" />
+                    <Button fx:id="exportExcelP" onAction="#exportExcelP" styleClass="export-btn" text="📥 Exporter Excel" />
+
+
+                    <TextField fx:id="searchProfesseurField" promptText="Rechercher professeur..." style="-fx-background-radius: 5;" />
+                </HBox>
+                <TableView fx:id="professorsTable" prefHeight="400" prefWidth="250" GridPane.rowIndex="1">
+                    <columns>
+                        <TableColumn fx:id="nomProfColumn" prefWidth="150" text="Nom">
+                            <cellValueFactory>
+                                <PropertyValueFactory property="nom" />
+                            </cellValueFactory>
+                        </TableColumn>
+                        <TableColumn fx:id="matiereColumn" prefWidth="150" text="Matière">
+                            <cellValueFactory>
+                                <PropertyValueFactory property="matiere" />
+                            </cellValueFactory>
+                        </TableColumn>
+                        <TableColumn fx:id="disponibleColumn" prefWidth="100" text="Disponible">
+                            <cellValueFactory>
+                                <PropertyValueFactory property="disponible" />
+                            </cellValueFactory>
+                        </TableColumn>
+                    </columns>
+                </TableView>
+            </children>
+            <columnConstraints>
+                <ColumnConstraints />
+                <ColumnConstraints />
+            </columnConstraints>
+            <rowConstraints>
+                <RowConstraints />
+                <RowConstraints />
+            </rowConstraints>
+        </GridPane>
+
+
+        <!-- Section Bâtiments -->
+        <GridPane fx:id="buildingsPane" hgap="20" style="-fx-padding: 20;" vgap="20" visible="false">
+            <children>
+                <HBox spacing="10"  GridPane.rowIndex="0">
+                    <Button fx:id="addBatimentButton" onAction="#addBatiment" style="-fx-background-color: #27ae60; -fx-text-fill: white; -fx-background-radius: 5;" text="Ajouter Bâtiment" />
+                    <Button fx:id="deleteBatimentButton" onAction="#deleteBatiment" style="-fx-background-color: #c0392b; -fx-text-fill: white; -fx-background-radius: 5;" text="Supprimer Bâtiment" />
+                    <Button fx:id="modifyBatimentButton" onAction="#modifyBatiment" style="-fx-background-color: #f1c40f; -fx-text-fill: white; -fx-background-radius: 5;" text="Modifier Bâtiment" />
+                    <TextField fx:id="searchBatimentField" promptText="Rechercher bâtiment..." style="-fx-background-radius: 5;" />
+                    <Button fx:id="optimizeResourcesButton" onAction="#optimizeResources" style="-fx-background-color: #2980b9; -fx-text-fill: white; -fx-background-radius: 5;" text="Optimiser Ressources" />
+                    <GridPane.columnIndex>0</GridPane.columnIndex>
+                    <GridPane.rowIndex>7</GridPane.rowIndex>
+                    <GridPane.columnSpan>2</GridPane.columnSpan>
+                    <Button fx:id="exportPDFB" onAction="#exportPDFB" styleClass="export-btn" text="📤 Exporter PDF" />
+                    <Button fx:id="exportExcelB" onAction="#exportExcelB" styleClass="export-btn" text="📥 Exporter Excel" />
+
+                </HBox>
+                <TableView fx:id="batimentsTable" prefHeight="400" GridPane.rowIndex="1">
+                    <columns>
+                        <TableColumn fx:id="nomBatimentColumn" prefWidth="150" text="Nom">
+                            <cellValueFactory>
+                                <PropertyValueFactory property="nom" />
+                            </cellValueFactory>
+                        </TableColumn>
+                        <TableColumn fx:id="typeBatimentColumn" prefWidth="150" text="Type">
+                            <cellValueFactory>
+                                <PropertyValueFactory property="type" />
+                            </cellValueFactory>
+                        </TableColumn>
+                        <TableColumn fx:id="capaciteBatimentColumn" prefWidth="100" text="Capacité">
+                            <cellValueFactory>
+                                <PropertyValueFactory property="capacite" />
+                            </cellValueFactory>
+                        </TableColumn>
+                        <TableColumn fx:id="occupationActuelleBatimentColumn" prefWidth="100" text="Occupation Actuelle">
+                            <cellValueFactory>
+                                <PropertyValueFactory property="occupationActuelle" />
+                            </cellValueFactory>
+                        </TableColumn>
+                        <TableColumn fx:id="electriciteBatimentColumn" prefWidth="100" text="Electricité">
+                            <cellValueFactory>
+                                <PropertyValueFactory property="consommationRessources" />
+                            </cellValueFactory>
+                        </TableColumn>
+                        <TableColumn fx:id="eauBatimentColumn" prefWidth="100" text="Eau">
+                            <cellValueFactory>
+                                <PropertyValueFactory property="consommationRessources" />
+                            </cellValueFactory>
+                        </TableColumn>
+                        <TableColumn fx:id="espaceBatimentColumn" prefWidth="100" text="Espace">
+                            <cellValueFactory>
+                                <PropertyValueFactory property="consommationRessources" />
+                            </cellValueFactory>
+                        </TableColumn>
+                        <TableColumn fx:id="wifiBatimentColumn" prefWidth="100" text="WiFi">
+                            <cellValueFactory>
+                                <PropertyValueFactory property="consommationRessources" />
+                            </cellValueFactory>
+                        </TableColumn>
+                        <TableColumn fx:id="impactSatisfactionBatimentColumn" prefWidth="100" text="Impact Satisfaction">
+                            <cellValueFactory>
+                                <PropertyValueFactory property="impactSatisfaction" />
+                            </cellValueFactory>
+                        </TableColumn>
+                    </columns>
+                </TableView>
 
             </children>
             <columnConstraints>
@@ -119,47 +299,36 @@
             </rowConstraints>
         </GridPane>
 
-    <!-- Section Professeurs -->
-    <VBox fx:id="professorsPane" spacing="15" style="-fx-padding: 20;" visible="false">
-        <HBox spacing="10">
-            <Button onAction="#addProfessor" style="-fx-background-color: #2980b9; -fx-text-fill: white;" text="Nouveau Professeur" />
-            <Button onAction="#toggleAvailability" style="-fx-background-color: #f1c40f;" text="Modifier Disponibilité" />
-        </HBox>
-        
-        <TableView fx:id="professorsTable" prefHeight="400">
-            <columns>
-                <TableColumn prefWidth="150" text="Nom" />
-                <TableColumn prefWidth="150" text="Matière" />
-                <TableColumn prefWidth="100" text="Disponible" />
-            </columns>
-        </TableView>
-    </VBox>
+        <!-- Section Sauvegarde -->
 
-    <!-- Section Bâtiments -->
-    <VBox fx:id="buildingsPane" spacing="15" style="-fx-padding: 20;" visible="false">
-        <HBox spacing="10">
-            <Button onAction="#addBuilding" style="-fx-background-color: #8e44ad; -fx-text-fill: white;" text="Ajouter Bâtiment" />
-            <ComboBox fx:id="buildingTypeCombo" promptText="Type de bâtiment" />
-        </HBox>
-        
-        <TableView fx:id="buildingsTable" prefHeight="400">
-            <columns>
-                <TableColumn prefWidth="150" text="Nom" />
-                <TableColumn prefWidth="100" text="Type" />
-                <TableColumn prefWidth="80" text="Capacité" />
-                <TableColumn prefWidth="120" text="Consommation" />
-            </columns>
-        </TableView>
-    </VBox>
+        <GridPane fx:id="backupPane" hgap="20" style="-fx-padding: 20;" vgap="20" visible="false">
+            <children>
+                <Button fx:id="backupButton" layoutX="92.0" layoutY="755.0" mnemonicParsing="false" onAction="#backupData" prefHeight="25.0" prefWidth="348.0" style="-fx-background-color: #293242;" text="SAUVEGARDER DONNÉES" textFill="WHITE" GridPane.rowIndex="10" GridPane.columnIndex="0" GridPane.columnSpan="2" />
 
-    <!-- Section Sauvegarde -->
-    <VBox fx:id="backupPane" alignment="CENTER" spacing="20" style="-fx-padding: 40;" visible="false">
-        <Button onAction="#performBackup" style="-fx-background-color: #2ecc71; -fx-text-fill: white; -fx-font-size: 14;" text="📥 Sauvegarder Base de Données" />
-        
-        <Button onAction="#restoreBackup" style="-fx-background-color: #e74c3c; -fx-text-fill: white; -fx-font-size: 14;" text="📤 Restaurer Sauvegarde" />
-        
-        <Label fx:id="backupStatus" style="-fx-text-fill: #7f8c8d;" text="Dernière sauvegarde: 12/06/2024 14:30" />
-    </VBox>
+                <Button fx:id="restoreButton" layoutX="92.0" layoutY="790.0" mnemonicParsing="false" onAction="#restoreData" prefHeight="25.0" prefWidth="348.0" style="-fx-background-color: #293242;" text="RESTAURER DONNÉES" textFill="WHITE" GridPane.rowIndex="11" GridPane.columnIndex="0" GridPane.columnSpan="2" />
+                <Label fx:id="backupStatus" style="-fx-text-fill: #7f8c8d;" text="Dernière sauvegarde: 12/06/2024 14:30" />
+
+            </children>
+            <columnConstraints>
+                <ColumnConstraints />
+                <ColumnConstraints />
+            </columnConstraints>
+            <rowConstraints>
+                <RowConstraints />
+                <RowConstraints />
+            </rowConstraints>
+        </GridPane>
+
+
+
+
+
+
+
+
+
+
+
 </StackPane>
 
 </SplitPane>
